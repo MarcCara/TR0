@@ -2,8 +2,7 @@ const express = require('../backend/node_modules/express');
 const path = require('path');
 const mysql = require('../backend/node_modules/mysql2/promise');
 const app = express();
-const port = 3000;  
-//const port = Number(process.argv[2]) || 40400;
+const port = Number(process.argv[2]) || 40400;
 
 const { v4: uuidv4 } = require('../backend/node_modules/uuid/dist-node/index.js');
 const database = mysql.createPool({
@@ -238,5 +237,5 @@ app.get('/respostes', async (req, res) => {
 });
 
 app.listen(port, () => {
-  console.log(`Servidor funcionant a http://localhost:3000`);
+  console.log(`Servidor funcionant a http://localhost:40400`);
 });
