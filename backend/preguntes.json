@@ -1,0 +1,204 @@
+{
+  "preguntes_client": [
+    {
+      "id": 1,
+      "pregunta": "Què indica un senyal triangular amb la vora vermella i la silueta d'un cotxe derrapant a l'interior?",
+      "opcions": [
+        "Corba perillosa",
+        "Paviment lliscant",
+        "Calçada estreta"
+      ],
+      "imatge": "/imagenes/paviment_lliscant.jpg"
+    },
+    {
+      "id": 2,
+      "pregunta": "Quina és la velocitat màxima genèrica per a un turisme en una autovia?",
+      "opcions": [
+        "120 km/h",
+        "100 km/h",
+        "90 km/h"
+      ],
+      "imatge": "/imagenes/limite_velocidad.jpg"
+    },
+    {
+      "id": 3,
+      "pregunta": "És obligatori portar una roda de recanvi al turisme?",
+      "opcions": [
+        "No, només és obligatòria per a vehicles de mercaderies",
+        "Sí, i sempre ha de ser una roda de la mateixa mida",
+        "Sí, o bé un sistema alternatiu com un kit antipunxades"
+      ],
+      "imatge": "/imagenes/roda_recanvi.jpg"
+    },
+    {
+      "id": 4,
+      "pregunta": "Si el semàfor està en groc fix, què heu de fer?",
+      "opcions": [
+        "Aturar-se en condicions de seguretat, igual que si fos vermell",
+        "Accelerar per passar abans que es posi vermell",
+        "Passar amb precaució cedint el pas als vianants"
+      ],
+      "imatge": "/imagenes/semafor_groc.jpg"
+    },
+    {
+      "id": 5,
+      "pregunta": "Com a norma general, qui té prioritat de pas en una rotonda?",
+      "opcions": [
+        "Els vehicles que s'incorporen per la dreta",
+        "Els vehicles que ja estan circulant per dins de la rotonda",
+        "Els vehicles de grans dimensions o transport públic"
+      ],
+      "imatge": "/imagenes/rotonda.jpg"
+    },
+    {
+      "id": 6,
+      "pregunta": "Què indica una línia blanca contínua al mig de la calçada?",
+      "opcions": [
+        "Que es pot avançar si no ve cap vehicle de cara",
+        "Que cap vehicle no la pot traspassar ni circular-hi per sobre",
+        "Que només la pot traspassar un vehicle de dues rodes"
+      ],
+      "imatge": "/imagenes/linia_continua.jpg"
+    },
+    {
+      "id": 7,
+      "pregunta": "Quina és la taxa màxima d'alcohol permesa per a un conductor novell (menys de 2 anys de carnet)?",
+      "opcions": [
+        "0,25 mg/l en aire espirat",
+        "0,0 mg/l en aire espirat",
+        "0,15 mg/l en aire espirat"
+      ],
+      "imatge": "/imagenes/control_alcoholemia.jpg"
+    },
+    {
+      "id": 8,
+      "pregunta": "Es pot utilitzar el telèfon mòbil mentre es condueix?",
+      "opcions": [
+        "Només si s'utilitza un sistema de mans lliures sense auriculars",
+        "Sí, si estem aturats en un semàfor vermell",
+        "No, en cap cas s'hi pot parlar"
+      ],
+      "imatge": "/imagenes/mobil_cotxe.jpg"
+    },
+    {
+      "id": 9,
+      "pregunta": "Què indica el senyal de senyalització d'obligació rodó amb fons blau i fletxes girant?",
+      "opcions": [
+        "Prohibit canviar de sentit",
+        "Sentit giratori obligatori",
+        "Inici de via de sentit únic"
+      ],
+      "imatge": "/imagenes/sentit_giratori.jpg"
+    },
+    {
+      "id": 10,
+      "pregunta": "Quan s'han d'encendre els llums d'encreuament durant el dia?",
+      "opcions": [
+        "En passar per túnels o trams afectats pel senyal de túnel",
+        "Sempre, és obligatori per a tots els vehicles fora de poblat",
+        "Únicament quan el cel estigui ennuvolat"
+      ],
+      "imatge": "/imagenes/tunel_llums.jpg"
+    },
+    {
+      "id": 11,
+      "pregunta": "Quina distància de seguretat mínima heu de deixar amb el vehicle precedent dins d'un túnel si no teniu intenció d'avançar (sent turisme)?",
+      "opcions": [
+        "50 metres",
+        "100 metres",
+        "150 metres"
+      ],
+      "imatge": "/imagenes/distancia_tunel.jpg"
+    },
+    {
+      "id": 12,
+      "pregunta": "És obligatori portar una armilla reflectora d'alta visibilitat al vehicle?",
+      "opcions": [
+        "Sí, i ha d'estar accessible des del seient del conductor",
+        "No, es pot portar al maleter sense problema",
+        "Només per als vehicles de transport de mercaderies"
+      ],
+      "imatge": "/imagenes/armilla_reflectora.jpg"
+    },
+    {
+      "id": 13,
+      "pregunta": "Davant d'un senyal d'STOP sense línia de detenció pintada a terra, on us heu d'aturar?",
+      "opcions": [
+        "A l'alçada del mateix senyal",
+        "No cal aturar-se si no venen vehicles",
+        "Immediatament abans de la intersecció, sense envair-la"
+      ],
+      "imatge": "/imagenes/stop_sense_linia.jpg"
+    },
+    {
+      "id": 14,
+      "pregunta": "Quan ha de passar la primera Inspecció Tècnica (ITV) un turisme nou?",
+      "opcions": [
+        "Als 3 anys des de la primera matriculació",
+        "Als 4 anys des de la primera matriculació",
+        "Als 5 anys des de la primera matriculació"
+      ],
+      "imatge": "/imagenes/itv_turisme.jpg"
+    },
+    {
+      "id": 15,
+      "pregunta": "Amb el permís de la classe B, podeu conduir una motocicleta de 125 cc?",
+      "opcions": [
+        "No, fa falta el permís A2 com a mínim",
+        "Sí, només si porteu passatger",
+        "Sí, si fa més de 3 anys que teniu el permís B i només per territori nacional"
+      ],
+      "imatge": "/imagenes/moto_125.jpg"
+    },
+    {
+      "id": 16,
+      "pregunta": "Quan és obligatori encendre el llum antiboira posterior?",
+      "opcions": [
+        "Només quan plou lleugerament",
+        "Amb boira espessa, pluja molt intensa, forta nevada o núvols densos de pols",
+        "Sempre que encenguem els llums de posició"
+      ],
+      "imatge": "/imagenes/antiboira_posterior.jpg"
+    },
+    {
+      "id": 17,
+      "pregunta": "Està permès parar en doble fila?",
+      "opcions": [
+        "No, està totalment prohibit",
+        "Sí, només per recollir passatgers",
+        "Sí, si no hi ha lloc a prop, per un temps inferior a 2 minuts i sense abandonar el vehicle"
+      ],
+      "imatge": "/imagenes/doble_fila.jpg"
+    },
+    {
+      "id": 18,
+      "pregunta": "Dins de poblat, està permès utilitzar els senyals acústics (clàxon) per advertir a un altre vehicle el propòsit d'avançar-lo?",
+      "opcions": [
+        "Sí, amb tocs curts i freqüents",
+        "No, està prohibit com a norma general",
+        "Sí, només durant la nit"
+      ],
+      "imatge": "/imagenes/claxon_poblat.jpg"
+    },
+    {
+      "id": 19,
+      "pregunta": "Què és l'aquaplaning?",
+      "opcions": [
+        "Una tècnica per frenar de manera més segura sobre mullat",
+        "La pèrdua de contacte dels pneumàtics amb l'asfalt per la presència d'una capa d'aigua",
+        "Un líquid anticongelant del motor"
+      ],
+      "imatge": "/imagenes/aquaplaning.jpg"
+    },
+    {
+      "id": 20,
+      "pregunta": "Com pot afectar la fatiga a la conducció?",
+      "opcions": [
+        "Augmentant el temps de reacció del conductor",
+        "Reduint el temps de reacció del conductor",
+        "Millorant la capacitat de concentració"
+      ],
+      "imatge": "/imagenes/fatiga_conduccio.jpg"
+    }
+  ]
+}

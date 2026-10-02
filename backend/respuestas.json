@@ -1,0 +1,84 @@
+{
+  "solucions_servidor": [
+    {
+      "id": 1,
+      "resposta_correcta": "Paviment lliscant"
+    },
+    {
+      "id": 2,
+      "resposta_correcta": "120 km/h"
+    },
+    {
+      "id": 3,
+      "resposta_correcta": "Sí, o bé un sistema alternatiu com un kit antipunxades"
+    },
+    {
+      "id": 4,
+      "resposta_correcta": "Aturar-se en condicions de seguretat, igual que si fos vermell"
+    },
+    {
+      "id": 5,
+      "resposta_correcta": "Els vehicles que ja estan circulant per dins de la rotonda"
+    },
+    {
+      "id": 6,
+      "resposta_correcta": "Que cap vehicle no la pot traspassar ni circular-hi per sobre"
+    },
+    {
+      "id": 7,
+      "resposta_correcta": "0,15 mg/l en aire espirat"
+    },
+    {
+      "id": 8,
+      "resposta_correcta": "Només si s'utilitza un sistema de mans lliures sense auriculars"
+    },
+    {
+      "id": 9,
+      "resposta_correcta": "Sentit giratori obligatori"
+    },
+    {
+      "id": 10,
+      "resposta_correcta": "En passar per túnels o trams afectats pel senyal de túnel"
+    },
+    {
+      "id": 11,
+      "resposta_correcta": "100 metres"
+    },
+    {
+      "id": 12,
+      "resposta_correcta": "Sí, i ha d'estar accessible des del seient del conductor"
+    },
+    {
+      "id": 13,
+      "resposta_correcta": "Immediatament abans de la intersecció, sense envair-la"
+    },
+    {
+      "id": 14,
+      "resposta_correcta": "Als 4 anys des de la primera matriculació"
+    },
+    {
+      "id": 15,
+      "resposta_correcta": "Sí, si fa més de 3 anys que teniu el permís B i només per territori nacional"
+    },
+    {
+      "id": 16,
+      "resposta_correcta": "Amb boira espessa, pluja molt intensa, forta nevada o núvols densos de pols"
+    },
+    {
+      "id": 17,
+      "resposta_correcta": "Sí, si no hi ha lloc a prop, per un temps inferior a 2 minuts i sense abandonar el vehicle"
+    },
+    {
+      "id": 18,
+      "resposta_correcta": "No, està prohibit com a norma general"
+    },
+    {
+      "id": 19,
+      "resposta_correcta": "La pèrdua de contacte dels pneumàtics amb l'asfalt per la presència d'una capa d'aigua"
+    },
+    {
+      "id": 20,
+      "resposta_correcta": "Augmentant el temps de reacció del conductor"
+    }
+  ]
+}

@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test de Conduir</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <header class="capcalera-pagina">
+        <h1>Test de Conduir</h1>
+        <button id="btn-esborrar-nom" class="hidden">Cerrar sesión</button>
+    </header>
+
+    <div id="seccio-usuari">
+        <div id="formulari-nom">
+            <label for="input-nom">Introdueix el teu nom:</label>
+            <input type="text" id="input-nom" placeholder="El teu nom">
+            <button id="btn-guardar-nom">Guardar</button>
+        </div>
+    </div>
+    
+    <div id="panell-info" class="hidden">
+        <nav id="marcador" aria-label="Navegació de preguntes"></nav>
+        <div id="temporitzador"><strong>Temps: 0s</strong></div>
+    </div>
+    
+    <div id="partida" class="hidden"></div>
+    
+    <!-- NOU: Botons de navegació (ocults al principi) -->
+    <div id="controls-navegacio" class="hidden">
+        <button id="btn-anterior">Anterior</button>
+        <button id="btn-seguent">Següent</button>
+        <button id="btn-enviar" class="hidden">Enviar Resultats</button>
+    </div>
+
+    <script>
+        function gestionarUsuari() {
+            const nomGuardat = localStorage.getItem('nomUsuari');
+            if (nomGuardat) {
+                document.getElementById('seccio-usuari').classList.add('hidden');
+                document.getElementById('btn-esborrar-nom').classList.remove('hidden');
+            } else {
+                document.getElementById('seccio-usuari').classList.remove('hidden');
+                document.getElementById('btn-esborrar-nom').classList.add('hidden');
+            }
+        }
+        localStorage.removeItem('nomUsuari');
+        gestionarUsuari();
+
+        document.getElementById('btn-guardar-nom').addEventListener('click', function() {
+            const nom = document.getElementById('input-nom').value.trim();
+            if (nom) {
+                localStorage.setItem('nomUsuari', nom);
+                gestionarUsuari();
+                iniciarTest();
+            }
+        });
+
+        document.getElementById('btn-esborrar-nom').addEventListener('click', function() {
+            // Detener y limpiar el temporizador
+            clearInterval(intervalTemps);
+            estatDeLaPartida.tempsTranscorregut = 0;
+
+            // Eliminar la sesión del usuario
+            localStorage.removeItem('nomUsuari');
+            document.getElementById('input-nom').value = '';
+
+            // Ocultar el test y sus controles
+            document.getElementById('panell-info').classList.add('hidden');
+            document.getElementById('partida').classList.add('hidden');
+            document.getElementById('controls-navegacio').classList.add('hidden');
+
+            // Limpiar el contenido y reiniciar los datos
+            document.getElementById('partida').innerHTML = '';
+            document.getElementById('temporitzador').innerHTML =
+                '<strong>Temps: 0s</strong>';
+
+            estatDeLaPartida.preguntaActualIndex = 0;
+            estatDeLaPartida.respostesUsuari = [];
+            llistaPreguntes = [];
+            partidaIniciada = false;
+
+            // Volver a mostrar la pantalla de identificación
+            gestionarUsuari();
+        });
+
+        // --- LÒGICA DE LA PARTIDA ---
+        let estatDeLaPartida = { 
+            preguntaActualIndex: 0, // Ara és un índex de navegació
+            respostesUsuari: [],    // Guardarem respostes a l'índex corresponent
+            tempsTranscorregut: 0 
+        };
+        
+        let llistaPreguntes = [];
+        let intervalTemps;
+        let partidaIniciada = false;
+
+        function iniciarTest() {
+            if (partidaIniciada) return;
+            partidaIniciada = true;
+
+            fetch('/preguntes')
+                .then(response => response.json())
+                .then(data => { iniciarPartida(data.questions); })
+                .catch(error => {
+                    partidaIniciada = false;
+                    console.error(error);
+                });
+        }
+
+        function iniciarPartida(preguntes) {
+            llistaPreguntes = preguntes;
+            document.getElementById('panell-info').classList.remove('hidden');
+            document.getElementById('partida').classList.remove('hidden');
+            // Inicialitzem l'array de respostes amb espais buits
+            estatDeLaPartida.respostesUsuari = new Array(preguntes.length).fill(null);
+            
+            generarTotesLesPreguntes(); // Generem el DOM sencer
+            actualitzarVista();         // Mostrem només la primera
+            iniciarTemporitzador();      
+        }
+
+        function iniciarTemporitzador() {
+            intervalTemps = setInterval(function() {
+                estatDeLaPartida.tempsTranscorregut++;
+                document.getElementById('temporitzador').innerHTML = `<strong>Temps: ${estatDeLaPartida.tempsTranscorregut}s</strong>`;
+            }, 1000);
+        }
+
+        // NOU: Generem tots els divs de cop
+        function generarTotesLesPreguntes() {
+            const contenidorPartida = document.getElementById('partida');
+            let htmlTotal = '';
+
+            llistaPreguntes.forEach((preg, index) => {
+                const botonsHTML = preg.opcions.map(opcion => 
+                    `<button class="btn-resposta" data-index="${index}">${opcion}</button>`
+                ).join(' ');
+                const imatgeHTML = preg.imatge
+                    ? `<img class="imatge-pregunta" src="${preg.imatge}" alt="Imatge de la pregunta ${index + 1}" loading="lazy">`
+                    : '';
+
+                // Cada pregunta és un div. Les amaguem totes per defecte afegint 'hidden'
+                htmlTotal += `
+                    <div id="pregunta-div-${index}" class="pregunta-contenidor hidden">
+                        <h2>${index + 1}. ${preg.pregunta}</h2>
+                        <div class="pregunta-visual">
+                            ${imatgeHTML}
+                        </div>
+                        <div class="opcions-pregunta">
+                            ${botonsHTML}
+                        </div>
+                    </div>
+                `;
+            });
+
+            contenidorPartida.innerHTML = htmlTotal;
+            document.getElementById('controls-navegacio').classList.remove('hidden');
+        }
+
+        // NOU: Funció que controla què s'ensenya i què s'amaga
+        function actualitzarVista() {
+            // 1. Amaguem totes les preguntes
+            document.querySelectorAll('.pregunta-contenidor').forEach(div => {
+                div.classList.add('hidden');
+            });
+
+            // 2. Mostrem només la pregunta actual
+            document.getElementById(`pregunta-div-${estatDeLaPartida.preguntaActualIndex}`).classList.remove('hidden');
+
+            // 3. Gestionem els botons Anterior/Següent
+            const btnAnterior = document.getElementById('btn-anterior');
+            const btnSeguent = document.getElementById('btn-seguent');
+            const btnEnviar = document.getElementById('btn-enviar');
+
+            renderitzarMarcador();
+
+            // Desactivar "Anterior" si estem a la primera
+            btnAnterior.disabled = (estatDeLaPartida.preguntaActualIndex === 0);
+
+            // Si estem a l'última, amaguem "Següent" i mostrem "Enviar Resultats"
+            if (estatDeLaPartida.preguntaActualIndex === llistaPreguntes.length - 1) {
+                btnSeguent.classList.add('hidden');
+                btnEnviar.classList.remove('hidden');
+                
+                // Opcional: Aturem el temps si l'usuari ha arribat al final i ha contestat tot
+                if (!estatDeLaPartida.respostesUsuari.includes(null)) {
+                    clearInterval(intervalTemps);
+                }
+            } else {
+                btnSeguent.classList.remove('hidden');
+                btnEnviar.classList.add('hidden');
+            }
+
+        }
+
+        // NOU: Escoltem els botons de navegació
+        document.getElementById('btn-anterior').addEventListener('click', () => {
+            if (estatDeLaPartida.preguntaActualIndex > 0) {
+                estatDeLaPartida.preguntaActualIndex--;
+                actualitzarVista();
+            }
+        });
+
+        document.getElementById('btn-seguent').addEventListener('click', () => {
+            if (estatDeLaPartida.preguntaActualIndex < llistaPreguntes.length - 1) {
+                estatDeLaPartida.preguntaActualIndex++;
+                actualitzarVista();
+            }
+        });
+
+        document.getElementById('marcador').addEventListener('click', event => {
+            const botoPregunta = event.target.closest('.btn-pregunta-nav');
+            if (!botoPregunta) return;
+
+            estatDeLaPartida.preguntaActualIndex = Number(botoPregunta.dataset.index);
+            actualitzarVista();
+        });
+
+        function renderitzarMarcador() {
+            document.getElementById('marcador').innerHTML = llistaPreguntes
+                .map((_, index) => {
+                    const respostaFeta = estatDeLaPartida.respostesUsuari[index] !== null;
+                    const preguntaActual = index === estatDeLaPartida.preguntaActualIndex;
+                    const classes = [
+                        'btn-pregunta-nav',
+                        respostaFeta ? 'resposta-feta' : '',
+                        preguntaActual ? 'pregunta-actual' : ''
+                    ].filter(Boolean).join(' ');
+                    const estatResposta = respostaFeta ? 'resposta' : 'sense respondre';
+                    const ariaActual = preguntaActual ? ' aria-current="step"' : '';
+
+                    return `<button type="button" class="${classes}" data-index="${index}" aria-label="Pregunta ${index + 1}, ${estatResposta}"${ariaActual}>${index + 1}</button>`;
+                })
+                .join('');
+        }
+
+        document.getElementById('partida').addEventListener('click', function(event) {
+            if (event.target.classList.contains('btn-resposta')) {
+                const indexPregunta = parseInt(event.target.getAttribute('data-index'));
+                const opcioSeleccionada = event.target.textContent;
+                
+                // Guardem la resposta a la posició exacta de l'array
+                estatDeLaPartida.respostesUsuari[indexPregunta] = opcioSeleccionada;
+                
+                // Efecte visual: traiem la classe 'seleccionada' de tots els botons d'aquesta pregunta
+                const botonsAquestaPregunta = document.getElementById(`pregunta-div-${indexPregunta}`).querySelectorAll('.btn-resposta');
+                botonsAquestaPregunta.forEach(btn => btn.classList.remove('seleccionada'));
+                
+                // Marquem només el botó clicat
+                event.target.classList.add('seleccionada');
+
+                // Ja no passem automàticament a la següent pregunta, ho fa l'usuari amb el botó!
+                renderitzarMarcador();
+            }
+        });
+        // NOU: Lògica per al botó d'Enviar Resultats
+        document.getElementById('btn-enviar').addEventListener('click', async function() {
+            // 1. Comprovem si ha respost totes les preguntes abans de deixar-lo enviar
+            if (estatDeLaPartida.respostesUsuari.includes(null)) {
+                alert("Si us plau, respon totes les preguntes abans d'enviar el test.");
+                return; // Si falten preguntes, aturem la funció aquí
+            }
+
+            // 2. Aturem el temps definitivament
+            clearInterval(intervalTemps);
+            
+            // 3. Amaguem els controls de navegació (Anterior, Següent, Enviar)
+            document.getElementById('controls-navegacio').classList.add('hidden');
+            
+            try {
+                const response = await fetch('/respostes');
+                const data = await response.json();
+                const solucions = new Map(data.solucions_servidor.map(solucio => [solucio.id, solucio.resposta_correcta]));
+                
+                const botonsResultat = llistaPreguntes.map((pregunta, index) => {
+                    const correcta = estatDeLaPartida.respostesUsuari[index] === solucions.get(pregunta.id);
+                    const estatResposta = correcta ? 'correcta' : 'incorrecta';
+                    return `<button type="button" class="btn-resultat ${correcta ? 'correcta' : 'incorrecta'}" data-index="${index}" aria-label="Pregunta ${index + 1}: resposta ${estatResposta}" aria-controls="detalle-respuesta" aria-expanded="false" title="Pregunta ${index + 1}: ${estatResposta}">${index + 1}</button>`;
+                }).join('');
+                
+                document.getElementById('panell-info').classList.add('hidden');
+                document.getElementById('partida').innerHTML = `
+                    <div class="resultat-final">
+                        <h2>Test Finalitzat!</h2>
+                        <h3>Resultat per pregunta</h3>
+                        <div class="botons-resultat" aria-label="Resultat de cada pregunta">${botonsResultat}</div>
+                        <section id="detalle-respuesta" class="detalle-respuesta" aria-live="polite" hidden></section>
+                        <p>Temps total: <strong>${estatDeLaPartida.tempsTranscorregut} segons</strong>.</p>
+                    </div>
+                `;
+
+                document.querySelector('.botons-resultat').addEventListener('click', event => {
+                    const botonResultado = event.target.closest('.btn-resultat');
+                    if (!botonResultado) return;
+
+                    const panelDetalle = document.getElementById('detalle-respuesta');
+                    const index = Number(botonResultado.dataset.index);
+                    if (botonResultado.getAttribute('aria-expanded') === 'true') {
+                        botonResultado.setAttribute('aria-expanded', 'false');
+                        panelDetalle.hidden = true;
+                        panelDetalle.replaceChildren();
+                        return;
+                    }
+
+                    document.querySelectorAll('.btn-resultat').forEach(boton => {
+                        boton.setAttribute('aria-expanded', 'false');
+                    });
+                    botonResultado.setAttribute('aria-expanded', 'true');
+
+                    const pregunta = llistaPreguntes[index];
+                    const respuestaUsuario = estatDeLaPartida.respostesUsuari[index];
+                    const respuestaCorrecta = solucions.get(pregunta.id);
+                    const esCorrecta = respuestaUsuario === respuestaCorrecta;
+                    const titulo = document.createElement('h4');
+                    titulo.textContent = `Pregunta ${index + 1}: ${pregunta.pregunta}`;
+
+                    const respuestaCorrectaTexto = document.createElement('p');
+                    respuestaCorrectaTexto.className = 'respuesta-correcta-detalle';
+                    respuestaCorrectaTexto.textContent = `Resposta correcta: ${respuestaCorrecta}`;
+
+                    const respuestaUsuarioTexto = document.createElement('p');
+                    respuestaUsuarioTexto.className = esCorrecta
+                        ? 'respuesta-usuario-detalle correcta'
+                        : 'respuesta-usuario-detalle incorrecta';
+                    respuestaUsuarioTexto.textContent = `La teva resposta: ${respuestaUsuario}`;
+
+                    panelDetalle.replaceChildren(titulo, respuestaCorrectaTexto, respuestaUsuarioTexto);
+                    panelDetalle.hidden = false;
+                });
+
+            } catch (error) {
+                console.error('No s\'han pogut carregar les respostes correctes:', error);
+            }
+        });
+    </script>
+</body>
+</html>

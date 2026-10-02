@@ -1,0 +1,10 @@
+{
+  "dependencies": {
+    "express": "^5.2.1",
+    "mysql2": "^3.24.4",
+    "uuid": "^14.0.2"
+  },
+  "scripts": {
+    "migrate": "node migrate.js"
+  }
+}
