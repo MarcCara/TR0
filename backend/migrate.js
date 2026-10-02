@@ -1,19 +1,11 @@
 const fs = require('fs');
-const mysql = require('mysql2/promise');
+const createDatabasePool = require('./database');
 
 const preguntes = require('./preguntes.json').preguntes_client;
 const solucions = require('./respuestas.json').solucions_servidor;
 const solucionsPerId = new Map(solucions.map(solucio => [solucio.id, solucio.resposta_correcta]));
 
-const database = mysql.createPool({
-  host: process.env.DB_HOST || 'localhost',
-  port: Number(process.env.DB_PORT) || 3306,
-  user: process.env.DB_USER || 'root',
-  password: process.env.DB_PASSWORD || '',
-  database: process.env.DB_NAME || 'quiz',
-  waitForConnections: true,
-  connectionLimit: 1
-});
+const database = createDatabasePool(1);
 
 async function migrate() {
   const connection = await database.getConnection();

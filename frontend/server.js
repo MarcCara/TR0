@@ -1,19 +1,11 @@
 const express = require('../backend/node_modules/express');
 const path = require('path');
-const mysql = require('../backend/node_modules/mysql2/promise');
 const app = express();
-const port = Number(process.argv[2]) || 40400;
+const port = Number(process.env.PORT || process.argv[2]) || 40400;
 
 const { v4: uuidv4 } = require('../backend/node_modules/uuid/dist-node/index.js');
-const database = mysql.createPool({
-  host: process.env.DB_HOST || 'localhost',
-  port: Number(process.env.DB_PORT) || 3306,
-  user: process.env.DB_USER || 'root',
-  password: process.env.DB_PASSWORD || '',
-  database: process.env.DB_NAME || 'quiz',
-  waitForConnections: true,
-  connectionLimit: 10
-});
+const createDatabasePool = require('../backend/database');
+const database = createDatabasePool(10);
 
 const sessions = new Map();
 
@@ -236,6 +228,13 @@ app.get('/respostes', async (req, res) => {
   res.json({ solucions_servidor: solucions });
 });
 
-app.listen(port, () => {
-  console.log(`Servidor funcionant a http://localhost:40400`);
-});
+database.query('SELECT 1')
+  .then(() => {
+    app.listen(port, () => {
+      console.log(`Servidor funcionant al port ${port}`);
+    });
+  })
+  .catch(error => {
+    console.error('No s’ha pogut connectar a MySQL:', error.message);
+    process.exitCode = 1;
+  });
