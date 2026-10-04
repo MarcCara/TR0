@@ -41,3 +41,9 @@ Les contrasenyes del fitxer `compose.yaml` són només per a aquesta prova local
 `compose.yaml` és només per al desenvolupament local. En producció, la base de dades de Hestia és l'única base de dades que s'ha de configurar per a Node; el servidor no assumeix cap connexió local si falten les variables requerides.
 
 L'esquema desa les preguntes a `preguntes` i les opcions a `opcions`. Cada opció pertany a una pregunta i `es_correcta` identifica la resposta vàlida. Les rutes mantenen els formats JSON existents.
+
+## Administració de preguntes
+
+Amb el servidor en marxa, obriu `http://localhost:40400/admin.html` (o el port configurat a `PORT`). El panell permet consultar, crear, editar i eliminar preguntes sense recarregar la pàgina. També podeu pujar JPEG, PNG, GIF o WebP de fins a 5 MB; els fitxers es desen a `frontend/uploads/questions` i la base de dades només desa el seu path. En substituir o eliminar una imatge pujada, el fitxer anterior s'elimina del disc.
+
+Les rutes CRUD són `GET /api/preguntes`, `GET /api/preguntes/:id`, `POST /api/preguntes`, `PUT /api/preguntes/:id` i `DELETE /api/preguntes/:id`. Les operacions amb formularis multipart utilitzen el camp `imatge` per al fitxer, `pregunta` per al text, `opcions` com a array JSON serialitzat i `resposta_correcta` per al text de la resposta correcta. Per treure una imatge existent, envieu `remove_image=true`.

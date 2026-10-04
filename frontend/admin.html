@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administració de preguntes</title>
+    <link rel="stylesheet" href="admin.css">
+    <script src="admin.js" defer></script>
+</head>
+<body class="admin-body">
+    <header class="admin-header">
+        <div>
+            <a href="/">← Tornar al joc</a>
+            <h1>Administració de preguntes</h1>
+            <p>Consulta i gestiona les preguntes del joc.</p>
+        </div>
+        <button id="refresh-questions" type="button">Actualitzar llista</button>
+    </header>
+
+    <main class="admin-layout">
+        <section class="panel editor-panel" aria-labelledby="form-title">
+            <h2 id="form-title">Crear pregunta</h2>
+            <p id="form-status" class="status-message" role="status" aria-live="polite"></p>
+            <form id="question-form">
+                <label for="question-text">Pregunta</label>
+                <textarea id="question-text" name="pregunta" rows="3" required></textarea>
+
+                <fieldset>
+                    <legend>Respostes <span>(marca la correcta)</span></legend>
+                    <div id="options-container"></div>
+                    <button id="add-option" class="secondary-button" type="button">Afegir resposta</button>
+                </fieldset>
+
+                <label for="question-image">Imatge (opcional)</label>
+                <input id="question-image" name="imatge" type="file" accept="image/jpeg,image/png,image/gif,image/webp">
+                <p class="field-hint">JPEG, PNG, GIF o WebP; màxim 5 MB.</p>
+                <div id="image-preview-container" class="image-preview-container" hidden>
+                    <img id="image-preview" alt="Previsualització de la imatge de la pregunta">
+                </div>
+                <label id="remove-image-label" class="checkbox-label" hidden>
+                    <input id="remove-image" type="checkbox">
+                    Eliminar la imatge actual
+                </label>
+
+                <div class="form-actions">
+                    <button id="save-question" type="submit">Crear pregunta</button>
+                    <button id="cancel-edit" class="secondary-button" type="button" hidden>Cancel·lar edició</button>
+                </div>
+            </form>
+        </section>
+
+        <section class="question-section" aria-labelledby="questions-title">
+            <div class="section-heading">
+                <h2 id="questions-title">Preguntes existents</h2>
+                <span id="question-count"></span>
+            </div>
+            <p id="list-status" class="status-message" role="status" aria-live="polite"></p>
+            <div id="questions-list" class="questions-list"></div>
+        </section>
+    </main>
+</body>
+</html>
