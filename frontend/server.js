@@ -89,6 +89,18 @@ async function eliminarImatgePujada(file) {
   if (file) await fs.promises.rm(file.path, { force: true });
 }
 
+function fitxerImatgePerRuta(ruta) {
+  const prefix = '/imagenes/uploads/';
+  if (typeof ruta !== 'string' || !ruta.startsWith(prefix)) return null;
+
+  const nomFitxer = ruta.slice(prefix.length);
+  if (!/^[\da-f]{8}-[\da-f]{4}-[\da-f]{4}-[\da-f]{4}-[\da-f]{12}\.(?:jpe?g|png|webp)$/i.test(nomFitxer)) {
+    return null;
+  }
+
+  return path.join(directorImatges, nomFitxer);
+}
+
 async function obtenirPreguntes(id) {
   const sql = `
     SELECT p.id, p.pregunta, p.imatge, o.text_opcio, o.es_correcta
@@ -252,10 +264,31 @@ app.delete('/api/preguntes/:id', async (req, res) => {
     return res.status(400).json({ error: 'L identificador no és vàlid.' });
   }
 
+  const [preguntes] = await database.execute(
+    'SELECT imatge FROM preguntes WHERE id = ?',
+    [id]
+  );
+  if (preguntes.length === 0) {
+    return res.status(404).json({ error: 'Pregunta no trobada.' });
+  }
+
   const [result] = await database.execute('DELETE FROM preguntes WHERE id = ?', [id]);
   if (result.affectedRows === 0) {
     return res.status(404).json({ error: 'Pregunta no trobada.' });
   }
+
+  const fitxerImatge = fitxerImatgePerRuta(preguntes[0].imatge);
+  if (fitxerImatge) {
+    try {
+      await fs.promises.rm(fitxerImatge, { force: true });
+    } catch (error) {
+      console.error('La pregunta s’ha eliminat però no s’ha pogut esborrar la imatge:', error);
+      return res.status(500).json({
+        error: 'La pregunta s’ha eliminat però no s’ha pogut esborrar el fitxer d’imatge.'
+      });
+    }
+  }
+
   res.status(204).end();
 });
 
