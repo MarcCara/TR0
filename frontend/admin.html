@@ -26,10 +26,16 @@
                     <div id="opcions" class="admin-opcions"></div>
                     <button id="afegir-opcio" type="button">Afegir opció</button>
                 </fieldset>
-                <label class="admin-camp" for="imatge">
-                    Imatge (ruta o URL, opcional)
-                    <input id="imatge" name="imatge" type="text" placeholder="/imagenes/rotonda.jpg">
+                <label class="admin-camp" for="imatge_file">
+                    Imatge (opcional, JPG, PNG o WebP)
+                    <input id="imatge_file" name="imatge_file" type="file" accept="image/jpeg,image/png,image/webp">
+                    <span class="admin-ajuda">Mida màxima: 5 MB. En modificar, si no trieu cap fitxer, es conserva la imatge actual.</span>
                 </label>
+                <input id="imatge-actual" name="imatge" type="hidden">
+                <div id="previsualitzacio-imatge" class="admin-image-preview" hidden>
+                    <img id="imatge-preview" alt="Previsualització de la imatge">
+                    <p id="imatge-estat"></p>
+                </div>
                 <p id="missatge-formulari" class="admin-estat" role="status"></p>
                 <div class="admin-accions">
                     <button id="desar" type="submit">Crear pregunta</button>

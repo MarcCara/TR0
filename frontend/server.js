@@ -1,11 +1,39 @@
 const express = require('../backend/node_modules/express');
+const multer = require('../backend/node_modules/multer');
 const path = require('path');
+const fs = require('fs');
+const crypto = require('crypto');
 const app = express();
 const port = Number(process.env.PORT || process.argv[2]) || 40400;
 
 const { v4: uuidv4 } = require('../backend/node_modules/uuid/dist-node/index.js');
 const createDatabasePool = require('../backend/database');
 const database = createDatabasePool(10);
+const directorImatges = path.join(__dirname, 'imagenes', 'uploads');
+fs.mkdirSync(directorImatges, { recursive: true });
+
+const pujadorImatges = multer({
+  storage: multer.diskStorage({
+    destination: directorImatges,
+    filename: (req, file, callback) => {
+      const extensio = path.extname(file.originalname).toLowerCase();
+      callback(null, `${crypto.randomUUID()}${extensio}`);
+    }
+  }),
+  limits: { fileSize: 5 * 1024 * 1024, files: 1 },
+  fileFilter: (req, file, callback) => {
+    const extensionsPerMime = {
+      'image/jpeg': ['.jpg', '.jpeg'],
+      'image/png': ['.png'],
+      'image/webp': ['.webp']
+    };
+    const extensions = extensionsPerMime[file.mimetype];
+    if (!extensions || !extensions.includes(path.extname(file.originalname).toLowerCase())) {
+      return callback(new Error('La imatge ha de ser JPG, PNG o WebP.'));
+    }
+    callback(null, true);
+  }
+});
 
 const sessions = new Map();
 
@@ -30,6 +58,35 @@ function validarPregunta(body = {}) {
   }
 
   return { pregunta, opcions, respostaCorrecta, imatge };
+}
+
+function obtenirCosPregunta(req) {
+  if (typeof req.body.opcions !== 'string') return req.body;
+  try {
+    return { ...req.body, opcions: JSON.parse(req.body.opcions) };
+  } catch {
+    return {};
+  }
+}
+
+async function imatgeEnviadaValida(file) {
+  if (!file) return true;
+  const contingut = await fs.promises.readFile(file.path);
+  const esJpeg = contingut[0] === 0xff && contingut[1] === 0xd8 && contingut[2] === 0xff;
+  const esPng = contingut.subarray(0, 8).equals(
+    Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a])
+  );
+  const esWebp = contingut.toString('ascii', 0, 4) === 'RIFF' &&
+    contingut.toString('ascii', 8, 12) === 'WEBP';
+  return esJpeg || esPng || esWebp;
+}
+
+function rutaImatgePujada(file) {
+  return file ? `/imagenes/uploads/${file.filename}` : null;
+}
+
+async function eliminarImatgePujada(file) {
+  if (file) await fs.promises.rm(file.path, { force: true });
 }
 
 async function obtenirPreguntes(id) {
@@ -99,12 +156,21 @@ app.get('/api/preguntes/:id', async (req, res) => {
   res.json(pregunta);
 });
 
-app.post('/api/preguntes', async (req, res) => {
-  const pregunta = validarPregunta(req.body);
+app.post('/api/preguntes', pujadorImatges.single('imatge_file'), async (req, res) => {
+  const cos = obtenirCosPregunta(req);
+  const pregunta = validarPregunta({
+    ...cos,
+    imatge: rutaImatgePujada(req.file) || cos.imatge || null
+  });
   if (!pregunta) {
+    await eliminarImatgePujada(req.file);
     return res.status(400).json({
       error: 'Cal indicar pregunta, opcions i una resposta_correcta inclosa a opcions.'
     });
+  }
+  if (!(await imatgeEnviadaValida(req.file))) {
+    await eliminarImatgePujada(req.file);
+    return res.status(400).json({ error: 'El fitxer no és una imatge vàlida.' });
   }
 
   const connection = await database.getConnection();
@@ -120,22 +186,33 @@ app.post('/api/preguntes', async (req, res) => {
     res.status(201).json(creada);
   } catch (error) {
     await connection.rollback();
+    await eliminarImatgePujada(req.file);
     throw error;
   } finally {
     connection.release();
   }
 });
 
-app.put('/api/preguntes/:id', async (req, res) => {
+app.put('/api/preguntes/:id', pujadorImatges.single('imatge_file'), async (req, res) => {
   const id = Number(req.params.id);
-  const pregunta = validarPregunta(req.body);
+  const cos = obtenirCosPregunta(req);
+  const pregunta = validarPregunta({
+    ...cos,
+    imatge: rutaImatgePujada(req.file) || cos.imatge || null
+  });
   if (!Number.isSafeInteger(id) || id < 1) {
+    await eliminarImatgePujada(req.file);
     return res.status(400).json({ error: 'L identificador no és vàlid.' });
   }
   if (!pregunta) {
+    await eliminarImatgePujada(req.file);
     return res.status(400).json({
       error: 'Cal indicar pregunta, opcions i una resposta_correcta inclosa a opcions.'
     });
+  }
+  if (!(await imatgeEnviadaValida(req.file))) {
+    await eliminarImatgePujada(req.file);
+    return res.status(400).json({ error: 'El fitxer no és una imatge vàlida.' });
   }
 
   const connection = await database.getConnection();
@@ -147,6 +224,7 @@ app.put('/api/preguntes/:id', async (req, res) => {
     );
     if (existing.length === 0) {
       await connection.rollback();
+      await eliminarImatgePujada(req.file);
       return res.status(404).json({ error: 'Pregunta no trobada.' });
     }
 
@@ -161,6 +239,7 @@ app.put('/api/preguntes/:id', async (req, res) => {
     res.json(actualitzada);
   } catch (error) {
     await connection.rollback();
+    await eliminarImatgePujada(req.file);
     throw error;
   } finally {
     connection.release();
@@ -178,6 +257,13 @@ app.delete('/api/preguntes/:id', async (req, res) => {
     return res.status(404).json({ error: 'Pregunta no trobada.' });
   }
   res.status(204).end();
+});
+
+app.use((error, req, res, next) => {
+  if (error instanceof multer.MulterError || error.message === 'La imatge ha de ser JPG, PNG o WebP.') {
+    return res.status(400).json({ error: error.message });
+  }
+  next(error);
 });
 
 app.get('/preguntes', async (req, res) => {

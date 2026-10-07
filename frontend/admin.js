@@ -5,7 +5,29 @@ const estatLlista = document.getElementById('estat-llista');
 const llista = document.getElementById('preguntes');
 const botoDesar = document.getElementById('desar');
 const botoCancelar = document.getElementById('cancel·lar');
+const fitxerImatge = document.getElementById('imatge_file');
+const rutaImatgeActual = document.getElementById('imatge-actual');
+const previsualitzacioImatge = document.getElementById('previsualitzacio-imatge');
+const imatgePreview = document.getElementById('imatge-preview');
+const estatImatge = document.getElementById('imatge-estat');
 let idEnEdicio = null;
+let urlPrevisualitzacio = null;
+
+function mostrarImatgeActual(ruta, text) {
+    if (urlPrevisualitzacio) {
+        URL.revokeObjectURL(urlPrevisualitzacio);
+        urlPrevisualitzacio = null;
+    }
+    previsualitzacioImatge.hidden = !ruta;
+    imatgePreview.hidden = !ruta;
+    if (ruta) {
+        imatgePreview.src = ruta;
+        estatImatge.textContent = text;
+    } else {
+        imatgePreview.removeAttribute('src');
+        estatImatge.textContent = '';
+    }
+}
 
 function actualitzarEliminacioOpcions() {
     const deshabilitat = opcions.children.length <= 2;
@@ -52,6 +74,8 @@ function afegirOpcio(text = '', correcta = false) {
 function reiniciarFormulari() {
     idEnEdicio = null;
     formulari.reset();
+    rutaImatgeActual.value = '';
+    mostrarImatgeActual('', '');
     opcions.replaceChildren();
     afegirOpcio('', true);
     afegirOpcio();
@@ -102,8 +126,10 @@ function mostrarPreguntes(preguntes) {
             contingut.append(text);
         });
         if (pregunta.imatge) {
-            const imatge = document.createElement('p');
-            imatge.textContent = `Imatge: ${pregunta.imatge}`;
+            const imatge = document.createElement('img');
+            imatge.src = pregunta.imatge;
+            imatge.alt = 'Imatge de la pregunta';
+            imatge.addEventListener('error', () => imatge.remove(), { once: true });
             contingut.append(imatge);
         }
 
@@ -138,7 +164,8 @@ async function carregarPreguntes() {
 function editarPregunta(pregunta) {
     idEnEdicio = pregunta.id;
     formulari.elements.pregunta.value = pregunta.pregunta;
-    formulari.elements.imatge.value = pregunta.imatge || '';
+    rutaImatgeActual.value = pregunta.imatge || '';
+    mostrarImatgeActual(pregunta.imatge || '', pregunta.imatge ? 'Imatge actual. Seleccioneu un fitxer nou per substituir-la.' : '');
     opcions.replaceChildren();
     pregunta.opcions.forEach(opcio => afegirOpcio(opcio, opcio === pregunta.resposta_correcta));
     document.getElementById('titol-formulari').textContent = 'Modificar pregunta';
@@ -162,6 +189,20 @@ async function eliminarPregunta(pregunta) {
 document.getElementById('afegir-opcio').addEventListener('click', () => afegirOpcio());
 botoCancelar.addEventListener('click', reiniciarFormulari);
 
+fitxerImatge.addEventListener('change', () => {
+    const fitxer = fitxerImatge.files[0];
+    if (!fitxer) {
+        mostrarImatgeActual(rutaImatgeActual.value, rutaImatgeActual.value ? 'Imatge actual.' : '');
+        return;
+    }
+    if (urlPrevisualitzacio) URL.revokeObjectURL(urlPrevisualitzacio);
+    urlPrevisualitzacio = URL.createObjectURL(fitxer);
+    previsualitzacioImatge.hidden = false;
+    imatgePreview.hidden = false;
+    imatgePreview.src = urlPrevisualitzacio;
+    estatImatge.textContent = fitxer.name;
+});
+
 formulari.addEventListener('submit', async event => {
     event.preventDefault();
     const campsOpcio = [...opcions.querySelectorAll('input[type="text"]')];
@@ -179,12 +220,12 @@ formulari.addEventListener('submit', async event => {
         return;
     }
 
-    const dades = {
-        pregunta: formulari.elements.pregunta.value.trim(),
-        opcions: opcionsText,
-        resposta_correcta: opcionsText[correcta],
-        imatge: formulari.elements.imatge.value.trim() || null
-    };
+    const dades = new FormData();
+    dades.append('pregunta', formulari.elements.pregunta.value.trim());
+    dades.append('opcions', JSON.stringify(opcionsText));
+    dades.append('resposta_correcta', opcionsText[correcta]);
+    dades.append('imatge', rutaImatgeActual.value);
+    if (fitxerImatge.files[0]) dades.append('imatge_file', fitxerImatge.files[0]);
     const id = idEnEdicio;
     botoDesar.disabled = true;
     missatgeFormulari.classList.remove('error');
@@ -192,8 +233,7 @@ formulari.addEventListener('submit', async event => {
     try {
         await cridarApi(id ? `/api/preguntes/${id}` : '/api/preguntes', {
             method: id ? 'PUT' : 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(dades)
+            body: dades
         });
         reiniciarFormulari();
         await carregarPreguntes();

@@ -41,3 +41,5 @@ Les contrasenyes del fitxer `compose.yaml` són només per a aquesta prova local
 `compose.yaml` és només per al desenvolupament local. En producció, la base de dades de Hestia és l'única base de dades que s'ha de configurar per a Node; el servidor no assumeix cap connexió local si falten les variables requerides.
 
 L'esquema desa les preguntes a `preguntes` i les opcions a `opcions`. Cada opció pertany a una pregunta i `es_correcta` identifica la resposta vàlida. Les rutes mantenen els formats JSON existents.
+
+La pàgina `frontend/admin.html` permet administrar preguntes i carregar imatges JPG, PNG o WebP de fins a 5 MB. Els fitxers es desen a `frontend/imagenes/uploads` i a la base de dades només se'n desa la ruta.
