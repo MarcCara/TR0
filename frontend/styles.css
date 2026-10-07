@@ -149,22 +149,11 @@ button:focus-visible {
     white-space: nowrap;
 }
 
-#controls-navegacio {
+#controls-resultat {
     display: flex;
     justify-content: flex-end;
     gap: 10px;
     margin-top: 16px;
-}
-
-#btn-anterior {
-    color: var(--ink);
-    background: transparent;
-    border: 1px solid #ccd2dc;
-}
-
-#btn-anterior:hover:not(:disabled) {
-    color: #fff;
-    border-color: var(--accent-dark);
 }
 
 .pregunta-contenidor {
@@ -327,11 +316,7 @@ button:focus-visible {
         padding: 22px 18px;
     }
 
-    #controls-navegacio {
-        justify-content: stretch;
-    }
-
-    #controls-navegacio button {
-        flex: 1;
+    #controls-resultat button {
+        width: 100%;
     }
 }
