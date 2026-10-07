@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administració de preguntes</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="admin.css">
+    <script src="admin.js" defer></script>
+</head>
+<body class="admin-page">
+    <header class="admin-header">
+        <a class="admin-back" href="/">← Tornar al joc</a>
+        <h1>Administració de preguntes</h1>
+    </header>
+    <main>
+        <section class="admin-panel">
+            <h2 id="titol-formulari">Crear pregunta</h2>
+            <form id="formulari">
+                <label class="admin-camp" for="pregunta">
+                    Pregunta
+                    <textarea id="pregunta" name="pregunta" required></textarea>
+                </label>
+                <fieldset>
+                    <legend>Opcions (seleccioneu la correcta)</legend>
+                    <div id="opcions" class="admin-opcions"></div>
+                    <button id="afegir-opcio" type="button">Afegir opció</button>
+                </fieldset>
+                <label class="admin-camp" for="imatge">
+                    Imatge (ruta o URL, opcional)
+                    <input id="imatge" name="imatge" type="text" placeholder="/imagenes/rotonda.jpg">
+                </label>
+                <p id="missatge-formulari" class="admin-estat" role="status"></p>
+                <div class="admin-accions">
+                    <button id="desar" type="submit">Crear pregunta</button>
+                    <button id="cancel·lar" type="button" hidden>Cancel·lar</button>
+                </div>
+            </form>
+        </section>
+        <section class="admin-panel">
+            <h2>Preguntes existents</h2>
+            <p id="estat-llista" class="admin-estat" role="status">Carregant...</p>
+            <div id="preguntes" class="admin-preguntes"></div>
+        </section>
+    </main>
+</body>
+</html>
