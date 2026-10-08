@@ -38,8 +38,37 @@ h1 {
 }
 
 button,
-input {
+input,
+a {
     font: inherit;
+}
+
+.enllac-admin {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 15px;
+    border: 1px solid rgba(216, 90, 58, 0.28);
+    border-radius: 8px;
+    color: var(--accent-dark);
+    background: rgba(255, 255, 255, 0.82);
+    font-family: 'Trebuchet MS', sans-serif;
+    font-size: 0.94rem;
+    font-weight: 700;
+    text-decoration: none;
+    transition: color 160ms ease, background-color 160ms ease, transform 160ms ease, box-shadow 160ms ease;
+}
+
+.enllac-admin::after {
+    content: '→';
+    font-size: 1.15em;
+}
+
+.enllac-admin:hover {
+    color: #fff;
+    background: var(--accent-dark);
+    box-shadow: 0 5px 12px rgba(23, 32, 51, 0.14);
+    transform: translateY(-1px);
 }
 
 button {

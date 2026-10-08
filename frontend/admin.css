@@ -30,13 +30,17 @@ body.admin-page {
     padding: clamp(18px, 4vw, 28px);
     background: var(--surface);
     border: 1px solid var(--line);
+    border-top: 4px solid var(--accent);
+    border-bottom: 4px solid var(--accent);
     border-radius: 12px;
-    box-shadow: 0 12px 28px rgba(23, 32, 51, 0.07);
+    box-shadow: 2px 12px 28px rgba(23, 32, 51, 0.07);
 }
 
 .admin-panel h2 {
     margin: 0 0 18px;
     font-size: 1.45rem;
+    padding-bottom: 12px;
+    border-bottom: 2px solid var(--line);
 }
 
 #formulari,
@@ -157,6 +161,11 @@ body.admin-page {
     gap: 18px;
     padding: 18px 0;
     border-top: 1px solid var(--line);
+    transition: background-color 160ms ease;
+}
+
+.admin-item:hover {
+    background: rgba(244, 246, 248, 0.68);
 }
 
 .admin-item h3 {
